@@ -16,6 +16,8 @@ class NadlanPlaywright:
         print(f"DEBUG: Username: {self.variables.get('username', 'NOT FOUND')}")
         print(f"DEBUG: Password: {self.variables.get('password', 'NOT FOUND')}")
         print(f"DEBUG: Transaction type: {self.variables.get('transaction_type', 'NOT FOUND')}")
+        print(f"DEBUG: Product: {self.variables.get('product', 'NOT FOUND')}")
+        print(f"DEBUG: Property type: {self.variables.get('property_type', 'NOT FOUND')}")
 
     async def run(self):
         async with async_playwright() as p:
@@ -474,11 +476,8 @@ async def main():
         # Parse the JSON input
         input_data = json.loads(sys.argv[1])
         
-        # Extract variables - handle both formats
-        if "variables" in input_data:
-            variables = input_data["variables"]
-        else:
-            variables = input_data
+        # Variables are passed directly
+        variables = input_data
         
         print(f"DEBUG: Raw input: {sys.argv[1]}")
         print(f"DEBUG: Parsed variables: {variables}")

@@ -22,8 +22,8 @@ async def run_appraisal(request: AppraisalRequest):
     Run the Nadlan appraisal script with the provided variables
     """
     try:
-        # Convert the request to JSON string - pass the entire request object
-        variables_json = json.dumps({"variables": request.variables})
+        # Convert the request to JSON string - pass the variables directly
+        variables_json = json.dumps(request.variables)
         
         # Run the script using subprocess
         result = subprocess.run(
