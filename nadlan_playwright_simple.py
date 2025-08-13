@@ -350,12 +350,32 @@ class NadlanPlaywright:
                                         print(f"DEBUG: Product is text, mapped to value: '{product_value}'")
                                     
                                     print(f"DEBUG: Attempting to select option with value: '{product_value}'")
+                                    
+                                    # Get all options in the dropdown to debug
+                                    all_options = await page.evaluate('''
+                                        () => {
+                                            const select = document.querySelector("#ctl00_cphBody_drpAppraisalType");
+                                            const options = Array.from(select.options);
+                                            return options.map(opt => ({
+                                                value: opt.value,
+                                                text: opt.text,
+                                                selected: opt.selected
+                                            }));
+                                        }
+                                    ''')
+                                    print(f"DEBUG: All dropdown options: {all_options}")
+                                    
                                     await page.select_option('#ctl00_cphBody_drpAppraisalType', product_value)
                                     print(f"Selected project/appraisal type: {product} (value: {product_value})")
                                     
+                                    # Wait a moment for the selection to take effect
+                                    await page.wait_for_timeout(1000)
+                                    
                                     # Verify the selection worked
                                     selected_value = await page.evaluate('() => document.querySelector("#ctl00_cphBody_drpAppraisalType").value')
+                                    selected_text = await page.evaluate('() => document.querySelector("#ctl00_cphBody_drpAppraisalType option:checked").text')
                                     print(f"DEBUG: Actual selected value in dropdown: '{selected_value}'")
+                                    print(f"DEBUG: Actual selected text in dropdown: '{selected_text}'")
                                     
                                     await page.wait_for_timeout(2000)
                                 
