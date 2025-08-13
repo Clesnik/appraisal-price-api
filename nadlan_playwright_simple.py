@@ -277,7 +277,16 @@ class NadlanPlaywright:
                                 appraisal_fee = None
                                 try:
                                     # Wait for the appraisal fee element to be available
-                                    await page.wait_for_selector('#ctl00_cphBody_lblLenderAppraisalFee', timeout=5000)
+                                    await page.wait_for_selector('#ctl00_cphBody_lblLenderAppraisalFee', timeout=10000)
+                                    
+                                    # Wait for the dynamic content to load (wait for the element to have actual content)
+                                    await page.wait_for_function(
+                                        '() => { const element = document.querySelector("#ctl00_cphBody_lblLenderAppraisalFee"); return element && element.textContent.trim() !== "" && element.textContent.trim() !== "$0"; }',
+                                        timeout=15000
+                                    )
+                                    
+                                    # Additional wait to ensure the value is fully loaded
+                                    await page.wait_for_timeout(3000)
                                     
                                     # Get the text content of the appraisal fee element
                                     fee_element = await page.query_selector('#ctl00_cphBody_lblLenderAppraisalFee')
@@ -309,11 +318,6 @@ class NadlanPlaywright:
                 form_analysis = await self._analyze_form(page)
                 
                 result = {
-                    "title": title,
-                    "url": self.target_url,
-                    "screenshot_path": self.screenshot_path,
-                    "form_analysis": form_analysis,
-                    "variables_processed": self.variables,
                     "appraisal_fee": appraisal_fee
                 }
                 

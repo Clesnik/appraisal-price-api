@@ -48,14 +48,7 @@ async def run_appraisal(request: AppraisalRequest):
                         continue
             
             if json_output:
-                return {
-                    "status": "success",
-                    "message": "Appraisal script executed successfully",
-                    "result": json_output,
-                    "stdout": result.stdout,
-                    "stderr": result.stderr,
-                    "return_code": result.returncode
-                }
+                return json_output
             else:
                 return {
                     "status": "partial_success",
