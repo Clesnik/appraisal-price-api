@@ -8,7 +8,7 @@ class NadlanPlaywright:
     def __init__(self, variables):
         self.variables = variables
         self.target_url = variables.get('target_url', 'https://nadlanvaluation.spurams.com/login.aspx')
-        self.screenshot_path = variables.get('screenshot_path', 'nadlan_screenshot.png')
+
         self.headless = variables.get('headless', False)
         
         # Debug: Print the variables being used
@@ -494,8 +494,6 @@ class NadlanPlaywright:
                                 
                                 # Extract appraisal fee value
                                 appraisal_fee = None
-                                appraisal_fee_screenshot = None
-                                full_page_screenshot = None
                                 try:
                                     # Wait for the appraisal fee element to be available
                                     await page.wait_for_selector('#ctl00_cphBody_lblLenderAppraisalFee', timeout=10000)
@@ -555,29 +553,7 @@ class NadlanPlaywright:
                                     
                                     print(f"Extracted appraisal fee: {appraisal_fee}")
                                     
-                                    # Take a screenshot of the appraisal fee element for debugging
-                                    try:
-                                        fee_element = await page.query_selector('#ctl00_cphBody_lblLenderAppraisalFee')
-                                        if fee_element:
-                                            # Take screenshot of just the appraisal fee element
-                                            await fee_element.screenshot(path='appraisal_fee_element.png')
-                                            print("Screenshot of appraisal fee element saved as: appraisal_fee_element.png")
-                                            
-                                            # Also take a screenshot of the entire page for context
-                                            await page.screenshot(path='full_page_appraisal_fee.png')
-                                            print("Full page screenshot saved as: full_page_appraisal_fee.png")
-                                            
-                                            # Add screenshot paths to the result
-                                            appraisal_fee_screenshot = 'appraisal_fee_element.png'
-                                            full_page_screenshot = 'full_page_appraisal_fee.png'
-                                        else:
-                                            print("Could not find appraisal fee element for screenshot")
-                                            appraisal_fee_screenshot = None
-                                            full_page_screenshot = None
-                                    except Exception as screenshot_error:
-                                        print(f"Screenshot failed: {screenshot_error}")
-                                        appraisal_fee_screenshot = None
-                                        full_page_screenshot = None
+
                                         
                                 except Exception as e:
                                     print(f"Appraisal fee extraction failed: {e}")
@@ -593,8 +569,7 @@ class NadlanPlaywright:
                     except Exception as e:
                         print(f"Error clicking login button: {e}")
                 
-                # Take a screenshot
-                await page.screenshot(path=self.screenshot_path)
+
                 
                 # Get page information
                 title = await page.title()
@@ -603,9 +578,7 @@ class NadlanPlaywright:
                 form_analysis = await self._analyze_form(page)
                 
                 result = {
-                    "appraisal_fee": appraisal_fee,
-                    "appraisal_fee_screenshot": appraisal_fee_screenshot,
-                    "full_page_screenshot": full_page_screenshot
+                    "appraisal_fee": appraisal_fee
                 }
                 
                 return result
