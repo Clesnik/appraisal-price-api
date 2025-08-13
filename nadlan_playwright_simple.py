@@ -10,6 +10,12 @@ class NadlanPlaywright:
         self.target_url = variables.get('target_url', 'https://nadlanvaluation.spurams.com/login.aspx')
         self.screenshot_path = variables.get('screenshot_path', 'nadlan_screenshot.png')
         self.headless = variables.get('headless', False)
+        
+        # Debug: Print the variables being used
+        print(f"DEBUG: Variables received: {self.variables}")
+        print(f"DEBUG: Username: {self.variables.get('username', 'NOT FOUND')}")
+        print(f"DEBUG: Password: {self.variables.get('password', 'NOT FOUND')}")
+        print(f"DEBUG: Transaction type: {self.variables.get('transaction_type', 'NOT FOUND')}")
 
     async def run(self):
         async with async_playwright() as p:
