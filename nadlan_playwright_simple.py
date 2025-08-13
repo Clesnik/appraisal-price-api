@@ -279,51 +279,58 @@ class NadlanPlaywright:
                                     # Wait for the appraisal fee element to be available
                                     await page.wait_for_selector('#ctl00_cphBody_lblLenderAppraisalFee', timeout=10000)
                                     
-                                    # Wait for the dynamic content to load and get the actual displayed value
+                                    # Wait for the dynamic content to load
+                                    await page.wait_for_timeout(3000)
+                                    
+                                    # Get the appraisal fee using JavaScript to access ::before pseudo-element
                                     appraisal_fee = await page.evaluate('''
                                         () => {
                                             const element = document.querySelector('#ctl00_cphBody_lblLenderAppraisalFee');
                                             if (!element) return null;
                                             
-                                            // Get the computed style to access ::before content
-                                            const computedStyle = window.getComputedStyle(element, '::before');
-                                            const beforeContent = computedStyle.getPropertyValue('content');
+                                            // Method 1: Get the ::before pseudo-element content
+                                            const beforeStyle = window.getComputedStyle(element, '::before');
+                                            const beforeContent = beforeStyle.getPropertyValue('content');
                                             
-                                            // Get the actual text content (the number)
-                                            const textContent = element.textContent.trim();
+                                            console.log('Before content:', beforeContent);
                                             
-                                            // Combine the dollar sign from ::before with the number
-                                            if (beforeContent && beforeContent !== 'none' && textContent) {
-                                                // Remove quotes from beforeContent and combine
-                                                const dollarSign = beforeContent.replace(/['"]/g, '');
-                                                return dollarSign + textContent;
+                                            // Method 2: Get the full displayed text
+                                            const fullText = element.innerText || element.textContent;
+                                            console.log('Full text:', fullText);
+                                            
+                                            // Method 3: Get the computed text content
+                                            const computedText = element.textContent;
+                                            console.log('Computed text:', computedText);
+                                            
+                                            // Method 4: Try to get the actual displayed value by combining
+                                            if (beforeContent && beforeContent !== 'none' && beforeContent !== 'normal') {
+                                                // Remove quotes from beforeContent
+                                                const cleanBeforeContent = beforeContent.replace(/['"]/g, '');
+                                                console.log('Clean before content:', cleanBeforeContent);
+                                                
+                                                // If beforeContent has the number, combine with dollar sign
+                                                if (cleanBeforeContent.match(/\\d+/)) {
+                                                    return '$' + cleanBeforeContent;
+                                                }
                                             }
                                             
-                                            // Fallback: try to get the full displayed text
-                                            return element.innerText || element.textContent;
+                                            // Method 5: Try to extract from the full text
+                                            if (fullText && fullText.includes('$')) {
+                                                const match = fullText.match(/\\$\\d+/);
+                                                if (match) {
+                                                    return match[0];
+                                                }
+                                            }
+                                            
+                                            // Method 6: Get the actual rendered text
+                                            const range = document.createRange();
+                                            range.selectNodeContents(element);
+                                            const renderedText = range.toString();
+                                            console.log('Rendered text:', renderedText);
+                                            
+                                            return renderedText || fullText || computedText;
                                         }
                                     ''')
-                                    
-                                    # Wait a bit more to ensure the value is fully loaded
-                                    await page.wait_for_timeout(2000)
-                                    
-                                    # If still not getting the right value, try alternative approach
-                                    if not appraisal_fee or appraisal_fee == "$0" or appraisal_fee == "725":
-                                        appraisal_fee = await page.evaluate('''
-                                            () => {
-                                                const element = document.querySelector('#ctl00_cphBody_lblLenderAppraisalFee');
-                                                if (!element) return null;
-                                                
-                                                // Get the full displayed text including pseudo-elements
-                                                const fullText = element.innerText || element.textContent;
-                                                
-                                                // Also try to get the computed value
-                                                const computedValue = window.getComputedStyle(element).getPropertyValue('--appraisal-fee') || 
-                                                                     window.getComputedStyle(element).getPropertyValue('content');
-                                                
-                                                return fullText || computedValue || element.textContent;
-                                            }
-                                        ''')
                                     
                                     print(f"Extracted appraisal fee: {appraisal_fee}")
                                         
