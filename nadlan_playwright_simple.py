@@ -279,22 +279,53 @@ class NadlanPlaywright:
                                     # Wait for the appraisal fee element to be available
                                     await page.wait_for_selector('#ctl00_cphBody_lblLenderAppraisalFee', timeout=10000)
                                     
-                                    # Wait for the dynamic content to load (wait for the element to have actual content)
-                                    await page.wait_for_function(
-                                        '() => { const element = document.querySelector("#ctl00_cphBody_lblLenderAppraisalFee"); return element && element.textContent.trim() !== "" && element.textContent.trim() !== "$0"; }',
-                                        timeout=15000
-                                    )
+                                    # Wait for the dynamic content to load and get the actual displayed value
+                                    appraisal_fee = await page.evaluate('''
+                                        () => {
+                                            const element = document.querySelector('#ctl00_cphBody_lblLenderAppraisalFee');
+                                            if (!element) return null;
+                                            
+                                            // Get the computed style to access ::before content
+                                            const computedStyle = window.getComputedStyle(element, '::before');
+                                            const beforeContent = computedStyle.getPropertyValue('content');
+                                            
+                                            // Get the actual text content (the number)
+                                            const textContent = element.textContent.trim();
+                                            
+                                            // Combine the dollar sign from ::before with the number
+                                            if (beforeContent && beforeContent !== 'none' && textContent) {
+                                                // Remove quotes from beforeContent and combine
+                                                const dollarSign = beforeContent.replace(/['"]/g, '');
+                                                return dollarSign + textContent;
+                                            }
+                                            
+                                            // Fallback: try to get the full displayed text
+                                            return element.innerText || element.textContent;
+                                        }
+                                    ''')
                                     
-                                    # Additional wait to ensure the value is fully loaded
-                                    await page.wait_for_timeout(3000)
+                                    # Wait a bit more to ensure the value is fully loaded
+                                    await page.wait_for_timeout(2000)
                                     
-                                    # Get the text content of the appraisal fee element
-                                    fee_element = await page.query_selector('#ctl00_cphBody_lblLenderAppraisalFee')
-                                    if fee_element:
-                                        appraisal_fee = await fee_element.text_content()
-                                        print(f"Extracted appraisal fee: {appraisal_fee}")
-                                    else:
-                                        print("Appraisal fee element not found")
+                                    # If still not getting the right value, try alternative approach
+                                    if not appraisal_fee or appraisal_fee == "$0" or appraisal_fee == "725":
+                                        appraisal_fee = await page.evaluate('''
+                                            () => {
+                                                const element = document.querySelector('#ctl00_cphBody_lblLenderAppraisalFee');
+                                                if (!element) return null;
+                                                
+                                                // Get the full displayed text including pseudo-elements
+                                                const fullText = element.innerText || element.textContent;
+                                                
+                                                // Also try to get the computed value
+                                                const computedValue = window.getComputedStyle(element).getPropertyValue('--appraisal-fee') || 
+                                                                     window.getComputedStyle(element).getPropertyValue('content');
+                                                
+                                                return fullText || computedValue || element.textContent;
+                                            }
+                                        ''')
+                                    
+                                    print(f"Extracted appraisal fee: {appraisal_fee}")
                                         
                                 except Exception as e:
                                     print(f"Appraisal fee extraction failed: {e}")
