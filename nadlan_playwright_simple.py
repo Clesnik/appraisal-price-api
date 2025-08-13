@@ -33,7 +33,7 @@ class NadlanPlaywright:
                     await page.wait_for_timeout(wait_time)
                 
                 # Fill in username if provided
-                username = self.variables.get('username', 'AaronK')
+                username = self.variables.get('username')
                 if username:
                     try:
                         await page.wait_for_selector('#ctl00_cphBody_Login1_UserName', timeout=5000)
@@ -44,7 +44,7 @@ class NadlanPlaywright:
                         print(f"Error filling username: {e}")
                 
                 # Fill in password if provided
-                password = self.variables.get('password', 'berlinchildhood$')
+                password = self.variables.get('password')
                 if password:
                     try:
                         await page.wait_for_selector('#ctl00_cphBody_Login1_Password', timeout=5000)
@@ -78,7 +78,7 @@ class NadlanPlaywright:
                                 print("Appraisal form loaded successfully")
                                 
                                 # Select transaction type if provided
-                                transaction_type = self.variables.get('transaction_type', 'Purchase')
+                                transaction_type = self.variables.get('transaction_type')
                                 if transaction_type:
                                     transaction_type_map = {
                                         'Purchase': '1',
@@ -102,7 +102,7 @@ class NadlanPlaywright:
                                     await page.wait_for_timeout(2000)
                                 
                                 # Select loan type if provided
-                                loan_type = self.variables.get('loan_type', 'Other (please specify)')
+                                loan_type = self.variables.get('loan_type')
                                 if loan_type:
                                     loan_type_map = {
                                         'Conventional': '1',
@@ -117,7 +117,7 @@ class NadlanPlaywright:
                                     await page.wait_for_timeout(2000)
                                 
                                 # Fill in loan number if provided
-                                loan_number = self.variables.get('loan_number', '000000')
+                                loan_number = self.variables.get('loan_number')
                                 if loan_number:
                                     try:
                                         await page.wait_for_selector('#ctl00_cphBody_txtLoanNumber', timeout=5000)
@@ -128,7 +128,7 @@ class NadlanPlaywright:
                                         print(f"Loan number input failed: {e}")
                                 
                                 # Fill in borrower name if provided
-                                borrower = self.variables.get('borrower', 'Example LLC')
+                                borrower = self.variables.get('borrower')
                                 if borrower:
                                     try:
                                         await page.wait_for_selector('#ctl00_cphBody_txtBorrowerName', timeout=5000)
@@ -139,13 +139,14 @@ class NadlanPlaywright:
                                         print(f"Borrower name input failed: {e}")
                                 
                                 # Select property type if provided
-                                property_type = self.variables.get('property_type', 'Single Family Residential')
+                                property_type = self.variables.get('property_type')
                                 if property_type:
                                     property_type_map = {
                                         'Single Family Residential': '13',
                                         'Condo': '14',
                                         'Townhouse': '15',
                                         'Multi-Family': '16',
+                                        'Multi Family - 2 Family': '16',
                                         'Commercial': '17',
                                         'Land': '18',
                                         'Other': '19'
@@ -156,7 +157,7 @@ class NadlanPlaywright:
                                     await page.wait_for_timeout(2000)
                                 
                                 # Fill in property address if provided
-                                property_address = self.variables.get('property_address', '15 Burr Avenue')
+                                property_address = self.variables.get('property_address')
                                 if property_address:
                                     try:
                                         await page.wait_for_selector('#ctl00_cphBody_txtPropertyAddress', timeout=5000)
@@ -167,7 +168,7 @@ class NadlanPlaywright:
                                         print(f"Property address input failed: {e}")
                                 
                                 # Fill in property city if provided
-                                property_city = self.variables.get('property_city', 'Morganville')
+                                property_city = self.variables.get('property_city')
                                 if property_city:
                                     try:
                                         await page.wait_for_selector('#ctl00_cphBody_txtPropertyCity', timeout=5000)
@@ -178,7 +179,7 @@ class NadlanPlaywright:
                                         print(f"Property city input failed: {e}")
                                 
                                 # Select property state if provided
-                                property_state = self.variables.get('property_state', 'New Jersey')
+                                property_state = self.variables.get('property_state')
                                 if property_state:
                                     property_state_map = {
                                         'New Jersey': 'NJ',
@@ -193,7 +194,7 @@ class NadlanPlaywright:
                                     await page.wait_for_timeout(2000)
                                 
                                 # Fill in property zip if provided
-                                property_zip = self.variables.get('property_zip', '07751')
+                                property_zip = self.variables.get('property_zip')
                                 if property_zip:
                                     try:
                                         await page.wait_for_selector('#ctl00_cphBody_txtPropertyZip', timeout=5000)
@@ -204,7 +205,7 @@ class NadlanPlaywright:
                                         print(f"Property zip input failed: {e}")
                                 
                                 # Select occupancy type if provided
-                                occupancy_type = self.variables.get('occupancy_type', 'Investment')
+                                occupancy_type = self.variables.get('occupancy_type')
                                 if occupancy_type:
                                     occupancy_type_map = {
                                         'Owner Occupied': 'Owner Occupied',
@@ -217,7 +218,7 @@ class NadlanPlaywright:
                                     await page.wait_for_timeout(2000)
                                 
                                 # Select contact person if provided
-                                contact_person = self.variables.get('contact_person', 'Agent')
+                                contact_person = self.variables.get('contact_person')
                                 if contact_person:
                                     contact_person_map = {
                                         'Agent': 'agent',
@@ -231,7 +232,7 @@ class NadlanPlaywright:
                                     await page.wait_for_timeout(2000)
                                 
                                 # Fill in access instructions if provided
-                                other_access_instructions = self.variables.get('other_access_instructions', 'None')
+                                other_access_instructions = self.variables.get('other_access_instructions')
                                 if other_access_instructions:
                                     try:
                                         await page.wait_for_selector('#ctl00_cphBody_txtAccessInformation', timeout=5000)
@@ -242,7 +243,7 @@ class NadlanPlaywright:
                                         print(f"Access instructions input failed: {e}")
                                 
                                 # Fill in agent name if provided
-                                agent_name = self.variables.get('agent_name', 'Chris Lesnik')
+                                agent_name = self.variables.get('agent_name')
                                 if agent_name:
                                     try:
                                         await page.wait_for_selector('#ctl00_cphBody_txtAgentName', timeout=5000)
@@ -253,7 +254,7 @@ class NadlanPlaywright:
                                         print(f"Agent name input failed: {e}")
                                 
                                 # Select project/appraisal type if provided
-                                product = self.variables.get('product', '1004/1007 (SFR & Rent Sch)')
+                                product = self.variables.get('product')
                                 if product:
                                     product_map = {
                                         '1004/1007 (SFR & Rent Sch)': '59',
@@ -270,7 +271,7 @@ class NadlanPlaywright:
                                     await page.wait_for_timeout(2000)
                                 
                                 # Fill in date appraisal needed if provided
-                                date_appraisal_needed = self.variables.get('date_appraisal_needed', '08/22/2025')
+                                date_appraisal_needed = self.variables.get('date_appraisal_needed')
                                 if date_appraisal_needed:
                                     try:
                                         await page.wait_for_selector('#ctl00_cphBody_txtDateNeeded', timeout=5000)
