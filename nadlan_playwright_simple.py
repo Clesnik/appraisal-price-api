@@ -260,6 +260,7 @@ class NadlanPlaywright:
                                         '1004 (SFR)': '1',
                                         '1007 (Rent Schedule)': '2',
                                         '1025 (Small Residential Income)': '3',
+                                        '1025/216 2-4 Multi-family': '3',
                                         '1073 (Condominium)': '4',
                                         '2055 (Exterior Only)': '5'
                                     }
@@ -469,7 +470,18 @@ async def main():
         return
     
     try:
-        variables = json.loads(sys.argv[1])
+        # Parse the JSON input
+        input_data = json.loads(sys.argv[1])
+        
+        # Extract variables - handle both formats
+        if "variables" in input_data:
+            variables = input_data["variables"]
+        else:
+            variables = input_data
+        
+        print(f"DEBUG: Raw input: {sys.argv[1]}")
+        print(f"DEBUG: Parsed variables: {variables}")
+        
         nadlan = NadlanPlaywright(variables)
         result = await nadlan.run()
         print(json.dumps(result))
