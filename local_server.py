@@ -30,7 +30,7 @@ class AppraisalRequest(BaseModel):
     contact_person: str
     other_access_instructions: str
     agent_name: str
-    product: str
+    product: int
     date_appraisal_needed: str
 
 @app.get("/")

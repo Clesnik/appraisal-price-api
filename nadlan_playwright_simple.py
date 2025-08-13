@@ -332,38 +332,11 @@ class NadlanPlaywright:
                                 # Select project/appraisal type if provided
                                 product = self.variables.get('product')
                                 if product:
-                                    print(f"DEBUG: Product received: '{product}' (type: {type(product)})")
+                                    print(f"DEBUG: Product received: {product} (type: {type(product)})")
                                     
-                                    # Check if product is already a numeric value
-                                    if str(product).isdigit():
-                                        product_value = str(product)
-                                        print(f"DEBUG: Product is numeric, using value: '{product_value}'")
-                                    else:
-                                        # Fallback to text mapping if needed
-                                        product_map = {
-                                            '1025/216 2-4 Multi-family': '2',
-                                            '1004 Single Family': '1',
-                                            '1073 Condo': '3',
-                                            '1004/1007 (SFR & Rent Sch)': '59'
-                                        }
-                                        product_value = product_map.get(product, '59')
-                                        print(f"DEBUG: Product is text, mapped to value: '{product_value}'")
-                                    
-                                    print(f"DEBUG: Attempting to select option with value: '{product_value}'")
-                                    
-                                    # Get all options in the dropdown to debug
-                                    all_options = await page.evaluate('''
-                                        () => {
-                                            const select = document.querySelector("#ctl00_cphBody_drpAppraisalType");
-                                            const options = Array.from(select.options);
-                                            return options.map(opt => ({
-                                                value: opt.value,
-                                                text: opt.text,
-                                                selected: opt.selected
-                                            }));
-                                        }
-                                    ''')
-                                    print(f"DEBUG: All dropdown options: {all_options}")
+                                    # Product is now guaranteed to be an integer
+                                    product_value = str(product)
+                                    print(f"DEBUG: Using product value: '{product_value}'")
                                     
                                     await page.select_option('#ctl00_cphBody_drpAppraisalType', product_value)
                                     print(f"Selected project/appraisal type: {product} (value: {product_value})")
