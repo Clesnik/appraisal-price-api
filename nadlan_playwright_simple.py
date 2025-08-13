@@ -332,9 +332,12 @@ class NadlanPlaywright:
                                 # Select project/appraisal type if provided
                                 product = self.variables.get('product')
                                 if product:
+                                    print(f"DEBUG: Product received: '{product}' (type: {type(product)})")
+                                    
                                     # Check if product is already a numeric value
                                     if str(product).isdigit():
                                         product_value = str(product)
+                                        print(f"DEBUG: Product is numeric, using value: '{product_value}'")
                                     else:
                                         # Fallback to text mapping if needed
                                         product_map = {
@@ -344,9 +347,16 @@ class NadlanPlaywright:
                                             '1004/1007 (SFR & Rent Sch)': '59'
                                         }
                                         product_value = product_map.get(product, '59')
+                                        print(f"DEBUG: Product is text, mapped to value: '{product_value}'")
                                     
+                                    print(f"DEBUG: Attempting to select option with value: '{product_value}'")
                                     await page.select_option('#ctl00_cphBody_drpAppraisalType', product_value)
                                     print(f"Selected project/appraisal type: {product} (value: {product_value})")
+                                    
+                                    # Verify the selection worked
+                                    selected_value = await page.evaluate('() => document.querySelector("#ctl00_cphBody_drpAppraisalType").value')
+                                    print(f"DEBUG: Actual selected value in dropdown: '{selected_value}'")
+                                    
                                     await page.wait_for_timeout(2000)
                                 
                                 # Fill in date appraisal needed if provided
