@@ -424,7 +424,7 @@ class NadlanPlaywright:
                                         }
                                     ''')
                                     
-                                                                        print(f"Extracted appraisal fee: {appraisal_fee}")
+                                    print(f"Extracted appraisal fee: {appraisal_fee}")
                                     
                                     # Take a screenshot of the appraisal fee element for debugging
                                     try:

@@ -7,7 +7,7 @@ import sys
 import os
 from typing import Dict, Any
 
-app = FastAPI(title="Nadlan Appraisal API", description="API for running Nadlan appraisal automation")
+app = FastAPI(title="Fixed Nadlan Appraisal API", description="API for running Nadlan appraisal automation")
 
 class AppraisalRequest(BaseModel):
     wait_time: int = 3000
@@ -28,12 +28,12 @@ class AppraisalRequest(BaseModel):
     contact_person: str
     other_access_instructions: str
     agent_name: str
-    product: int  # This MUST be an integer, not a string
+    product: int  # INTEGER - NOT STRING
     date_appraisal_needed: str
 
 @app.get("/")
 async def root():
-    return {"message": "Nadlan Appraisal API is running"}
+    return {"message": "Fixed Nadlan Appraisal API is running - ACCEPTS INTEGER PRODUCT"}
 
 @app.post("/run-appraisal")
 async def run_appraisal(request: AppraisalRequest):
@@ -41,8 +41,12 @@ async def run_appraisal(request: AppraisalRequest):
     Run the Nadlan appraisal script with the provided variables
     """
     try:
-        # Convert the request to JSON string - pass the entire request object
-        variables_json = json.dumps(request.dict())
+        print(f"🔍 Received request with product: {request.product} (type: {type(request.product)})")
+        
+        # Convert the request to JSON string using model_dump (Pydantic v2)
+        variables_json = json.dumps(request.model_dump())
+        
+        print(f"📤 Sending to script: {variables_json}")
         
         # Run the script using subprocess
         result = subprocess.run(
@@ -51,6 +55,9 @@ async def run_appraisal(request: AppraisalRequest):
             text=True,
             timeout=300  # 5 minute timeout
         )
+        
+        print(f"📥 Script stdout: {result.stdout}")
+        print(f"📥 Script stderr: {result.stderr}")
         
         # Parse the JSON output from the script
         try:
@@ -94,7 +101,7 @@ async def run_appraisal(request: AppraisalRequest):
 @app.get("/health")
 async def health_check():
     """Health check endpoint"""
-    return {"status": "healthy", "message": "Nadlan API is running"}
+    return {"status": "healthy", "message": "Fixed Nadlan API is running - ACCEPTS INTEGER PRODUCT"}
 
 if __name__ == "__main__":
     import uvicorn
