@@ -263,7 +263,7 @@ class NadlanPlaywright:
                                         '1004 (SFR)': '1',
                                         '1007 (Rent Schedule)': '2',
                                         '1025 (Small Residential Income)': '3',
-                                        '1025/216 2-4 Multi-family': '3',
+                                        '1025/216 2-4 Multi-family': '58',
                                         '1073 (Condominium)': '4',
                                         '2055 (Exterior Only)': '5'
                                     }
