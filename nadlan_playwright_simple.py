@@ -332,151 +332,19 @@ class NadlanPlaywright:
                                 # Select project/appraisal type if provided
                                 product = self.variables.get('product')
                                 if product:
-                                    product_map = {
-                                        '1004 Single Family': '1',
-                                        '1004/1007 (SFR & Rent Sch)': '59',
-                                        '1004/1007/216': '58',
-                                        '1004 & 216 (SFR & Op. Income)': '86',
-                                        '1073 Condo': '3',
-                                        '1073/1007 (Condo & Rent Sch)': '55',
-                                        '1073/1007/216': '56',
-                                        '1073 and 216 (Condo & Op. Income)': '87',
-                                        '1025 Multi Family w/out 216': '96',
-                                        '1025/216 2-4 Multi-family': '2',
-                                        'Homestyle 2-4 family 1025/216': '77',
-                                        '1025/216 2-4 family 203K': '78',
-                                        '1025/216 2-4 family USDA': '76',
-                                        '1004C Manufactured Home': '19',
-                                        'MFG 1004C investment(incl 1007)': '72',
-                                        '2098 Cooperative': '26',
-                                        'FHA 1004 Single Family': '22',
-                                        'FHA 1004/1007 (SFR & Rent Sch)': '63',
-                                        'FHA 1004/1007/216': '57',
-                                        'FHA 1073 Condo': '25',
-                                        'FHA 1073/1007/216': '54',
-                                        'FHA 1025 Multi Family w/out 216': '95',
-                                        'FHA 1025/216 2-4 Multi-family': '24',
-                                        'FHA 2098 Cooperative': '27',
-                                        'MFG 1004C FHA': '71',
-                                        'FHA Appraisal (FNMA 1004)': '93',
-                                        'FHA Conversion Appraisal Update': '51',
-                                        'FHA Converted to Conventional': '61',
-                                        'USDA Appraisal (FNMA 1004)': '94',
-                                        'Rush Fee': '62',
-                                        'Rural/Remote Fee': '79',
-                                        'Property Value 1M+': '37',
-                                        'Complex Property': '89',
-                                        'Final Inspection 1004D': '33',
-                                        'RECERTIFICATION OF VALUE /APPRAISAL UPDATE 1004D': '23',
-                                        '1004D Combo (Final Inspect + Recert)': '85',
-                                        'CDAIR Disaster Report': '88',
-                                        'FHA Inspection (CIR)': '42',
-                                        '1007 Rent Comparables': '28',
-                                        '216 Income Statement': '29',
-                                        '216 and 1007': '65',
-                                        '1033 Desk Review': '18',
-                                        '1075 Condo Exterior Only': '5',
-                                        '2000 Field Review': '17',
-                                        '2055 Exterior Only': '4',
-                                        '2070 Condition and Marketability Report': '38',
-                                        '2075 DU Property Inspection': '38',
-                                        '2095 Exterior Only Cooperative': '40',
-                                        'Retro Field Review': '50',
-                                        'ACE+PDR': '116',
-                                        'BPO Desktop': '117',
-                                        'BPO Exterior': '118',
-                                        'BPO Interior': '119',
-                                        'Condo 203K': '75',
-                                        'Uniform Residential Appraisal Report Desktop (1004 Desktop/780)': '108',
-                                        'Uniform Residential Appraisal Report Hybrid (1004 Hybrid/70H)': '109',
-                                        '1004 As Is Value ARV & 1007': '107',
-                                        '1004 As Is Value ARV': '113',
-                                        '1025 As Is Value ARV (Without 216)': '114',
-                                        '71A': '101',
-                                        '718': '102',
-                                        '718 Mixed Use': '53',
-                                        'General Purpose': '103',
-                                        'Summary/Narrative Report': '184',
-                                        'Summary/Narrative Report Format': '110',
-                                        'Bulk Product': '105',
-                                        'Commercial Product': '106',
-                                        'Jumbo 1004': '92',
-                                        'Jumbo 1025/216 MF': '91',
-                                        'Jumbo 1073': '90',
-                                        'Homestyle Condo 1073': '74',
-                                        'Condo USDA': '73',
-                                        'Covid Desktop 1004': '84',
-                                        'Covid FHA 1004 Exterior': '83',
-                                        'AVM': '16',
-                                        'Desktop Quantitative Appraisal': '49',
-                                        'Desktop Summary Appraisal': '48',
-                                        'NDR (1004D form)': '31',
-                                        'FNM 10040 Final Inspection': '13',
-                                        'FHA Field Review (HUD 1038)': '41',
-                                        'Questionnaire Fee': '52',
-                                        'HomeStyle Renovation 1004': '64',
-                                        'Reverse FHA 1004 SFR': '45',
-                                        'Single Family 203K': '69',
-                                        'Single family USDA': '78',
-                                        'FHA 203K Conversion Update': '68',
-                                        '1004 Homesafe Appraisal': '97',
-                                        '1025 Homesafe Appraisal': '98',
-                                        '1073 Homesafe Appraisal': '99',
-                                        'Employee Relocation Council Report (ERC)': '39',
-                                        'Farm Land/Owner Occupied': '34',
-                                        'General Purpose Appraisal Report GPAR': '68',
-                                        'Standard Fee for the Area': '81',
-                                        'Supplemental REO Addendum': '46',
-                                        'Vacant Land Report': '6',
-                                        'Vacating/Departure Appraisal Report': '36',
-                                        'FNMA 1081': '115',
-                                        'CDAIR': '82',
-                                        'Appeal/Reconsideration of Value': '88',
-                                        'Revision': '66',
-                                        'Chargeback/Bounced Check Fee': '67',
-                                        'Trip Fee': '32',
-                                        'CIR Compliance Inspection 92051': '120',
-                                        'Construction Draw': '121',
-                                        'FNMA Value Acceptance Property Data': '122',
-                                        '2000A 2-4 Family Field Review': '126',
-                                        '1073 As Is Value ARV & 1007': '127',
-                                        '71 A/B Form': '100',
-                                        '1073 As Is Value ARV': '128',
-                                        'URAR Hybrid (1073 Hybrid/70H)': '129',
-                                        '1004P': '130',
-                                        'HomeStyle Renovation 1004/1007 Investment': '132',
-                                        'Property Completion Report (PCR Hybrid)': '133',
-                                        '2055 Exterior Only Multi-Family': '134',
-                                        'CDA w MLS Sheets': '139',
-                                        'CDA w/o MLS Sheets': '140',
-                                        'Completion Report - PDC Exterior': '141',
-                                        'Completion Report - PDC Interior': '142',
-                                        'USDA 1004D': '145',
-                                        'DAIR - Exterior': '146',
-                                        '1025 Comparable Rental Data Only': '147',
-                                        'Jumbo (1004 and 1007)': '148',
-                                        'Internal ENV Report Only': '149',
-                                        'Short Term Rental Rent Schedule Narrative': '150',
-                                        '1025 As Is Value ARV with a 216': '151',
-                                        '1004 & Short Term Rental Rent Schedule Narrative': '152',
-                                        '1073 & Short Term Rental Rent Schedule Narrative': '153',
-                                        'New Construction (1004)': '154',
-                                        'FHA New Construction (1004)': '155',
-                                        'USDA Multi Family (1025)': '156',
-                                        'FCM 1007 Comparable Rent Schedule +STR': '157',
-                                        'FCM Single Family Investment w/1007 +STR': '158',
-                                        'FCM Single Family Invest (1004, 1007, and 216)+STR': '159',
-                                        'FCM Condo Invest (1073 & 1007) +STR': '160',
-                                        'FCM Condo Invest (1073, 1007 & 216) + STR': '161',
-                                        'FCM Manufacture Invest (1004C, 1007, 216) +STR': '162',
-                                        'FCM Manufactured Invest (1004C & 1007)+STR': '163',
-                                        'JUMBO FHA 203K Multi Family': '164',
-                                        'eVal Exterior': '165',
-                                        'eVal Interior': '166',
-                                        'ValPraze Exterior': '167',
-                                        'ValPraze Interior': '168'
-                                    }
-                                    product_value = product_map.get(product, '59')
+                                    # Check if product is already a numeric value
+                                    if str(product).isdigit():
+                                        product_value = str(product)
+                                    else:
+                                        # Fallback to text mapping if needed
+                                        product_map = {
+                                            '1025/216 2-4 Multi-family': '2',
+                                            '1004 Single Family': '1',
+                                            '1073 Condo': '3',
+                                            '1004/1007 (SFR & Rent Sch)': '59'
+                                        }
+                                        product_value = product_map.get(product, '59')
+                                    
                                     await page.select_option('#ctl00_cphBody_drpAppraisalType', product_value)
                                     print(f"Selected project/appraisal type: {product} (value: {product_value})")
                                     await page.wait_for_timeout(2000)
@@ -494,6 +362,8 @@ class NadlanPlaywright:
                                 
                                 # Extract appraisal fee value
                                 appraisal_fee = None
+                                appraisal_fee_screenshot = None
+                                full_page_screenshot = None
                                 try:
                                     # Wait for the appraisal fee element to be available
                                     await page.wait_for_selector('#ctl00_cphBody_lblLenderAppraisalFee', timeout=10000)
@@ -551,9 +421,31 @@ class NadlanPlaywright:
                                         }
                                     ''')
                                     
-                                    print(f"Extracted appraisal fee: {appraisal_fee}")
+                                                                        print(f"Extracted appraisal fee: {appraisal_fee}")
                                     
-
+                                    # Take a screenshot of the appraisal fee element for debugging
+                                    try:
+                                        fee_element = await page.query_selector('#ctl00_cphBody_lblLenderAppraisalFee')
+                                        if fee_element:
+                                            # Take screenshot of just the appraisal fee element
+                                            await fee_element.screenshot(path='appraisal_fee_element.png')
+                                            print("Screenshot of appraisal fee element saved as: appraisal_fee_element.png")
+                                            
+                                            # Also take a screenshot of the entire page for context
+                                            await page.screenshot(path='full_page_appraisal_fee.png')
+                                            print("Full page screenshot saved as: full_page_appraisal_fee.png")
+                                            
+                                            # Add screenshot paths to the result
+                                            appraisal_fee_screenshot = 'appraisal_fee_element.png'
+                                            full_page_screenshot = 'full_page_appraisal_fee.png'
+                                        else:
+                                            print("Could not find appraisal fee element for screenshot")
+                                            appraisal_fee_screenshot = None
+                                            full_page_screenshot = None
+                                    except Exception as screenshot_error:
+                                        print(f"Screenshot failed: {screenshot_error}")
+                                        appraisal_fee_screenshot = None
+                                        full_page_screenshot = None
                                         
                                 except Exception as e:
                                     print(f"Appraisal fee extraction failed: {e}")
@@ -578,7 +470,9 @@ class NadlanPlaywright:
                 form_analysis = await self._analyze_form(page)
                 
                 result = {
-                    "appraisal_fee": appraisal_fee
+                    "appraisal_fee": appraisal_fee,
+                    "appraisal_fee_screenshot": appraisal_fee_screenshot,
+                    "full_page_screenshot": full_page_screenshot
                 }
                 
                 return result
