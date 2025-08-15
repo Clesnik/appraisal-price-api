@@ -255,46 +255,9 @@ class NadlanPlaywrightSimpleWorking:
                                 
                                 print("✅ All available fields filled successfully!")
                                 
-                                # Wait longer for the form to process and look for calculate/submit button
-                                print("⏳ Waiting for form to process and looking for calculate button...")
-                                await page.wait_for_timeout(3000)
-                                
-                                # Try to find and click a calculate or submit button
-                                try:
-                                    # Look for common button selectors
-                                    calculate_selectors = [
-                                        '#ctl00_cphBody_btnCalculate',
-                                        '#ctl00_cphBody_btnSubmit', 
-                                        '#ctl00_cphBody_btnGetFee',
-                                        'input[type="submit"][value*="Calculate"]',
-                                        'input[type="submit"][value*="Submit"]',
-                                        'button[type="submit"]',
-                                        '.btn-calculate',
-                                        '.btn-submit'
-                                    ]
-                                    
-                                    button_clicked = False
-                                    for selector in calculate_selectors:
-                                        try:
-                                            button = await page.wait_for_selector(selector, timeout=1000)
-                                            if button:
-                                                await button.click()
-                                                print(f"✅ Clicked calculate/submit button: {selector}")
-                                                button_clicked = True
-                                                await page.wait_for_timeout(2000)  # Wait for calculation
-                                                break
-                                        except:
-                                            continue
-                                    
-                                    if not button_clicked:
-                                        print("⚠️ No calculate/submit button found, continuing...")
-                                        
-                                except Exception as e:
-                                    print(f"⚠️ Error looking for calculate button: {e}")
-                                
-                                # Wait additional time for appraisal fee to appear
+                                # Wait for appraisal fee to appear
                                 print("⏳ Waiting for appraisal fee to appear...")
-                                await page.wait_for_timeout(5000)
+                                await page.wait_for_timeout(3000)
                                 
                                 # Try to extract appraisal fee if available
                                 try:
