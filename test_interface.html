@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nadlan Appraisal API Test Interface</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fafafa;
+        }
+        .section h2 {
+            color: #555;
+            margin-top: 0;
+        }
+        textarea {
+            width: 100%;
+            height: 300px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: vertical;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .status.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .status.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .result {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 15px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Nadlan Appraisal API Direct Interface</h1>
+        
+        <div class="section">
+            <h2>📝 Request JSON</h2>
+            <p><strong>💡 Smart Features:</strong> Empty fields are automatically skipped, and navigation goes directly to the appraisal form (skips dashboard).</p>
+            <textarea id="requestJson" placeholder="Enter your JSON request here...">{
+  "wait_time": 0,
+  "screenshot_path": "appraisal_fee_test.png",
+  "headless": false,
+  "username": "AaronK",
+  "password": "berlinchildhood$",
+  "transaction_type": "Purchase",
+  "loan_type": "Other (please specify)",
+  "loan_number": "",
+  "borrower": "",
+  "property_type": "Single Family Residential",
+  "property_address": "15 Burr Avenue",
+  "property_city": "Marlboro Township",
+  "property_state": "New Jersey",
+  "property_zip": "07751",
+  "occupancy_type": "Investment",
+  "contact_person": "",
+  "other_access_instructions": "",
+  "agent_name": "",
+  "product": 59,
+  "date_appraisal_needed": ""
+}</textarea>
+        </div>
+
+        <div class="section">
+            <h2>🎯 Actions</h2>
+            <button onclick="sendRequest()" id="sendBtn">🚀 Send Request</button>
+            <button onclick="clearResults()">🗑️ Clear Results</button>
+            <button onclick="validateJson()">✅ Validate JSON</button>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Processing request... This may take a few minutes.</p>
+        </div>
+
+        <div class="section">
+            <h2>📊 Results</h2>
+            <div id="status"></div>
+            <div id="result" class="result" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8000';
+
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        function showResult(data) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.textContent = JSON.stringify(data, null, 2);
+            resultDiv.style.display = 'block';
+        }
+
+        function clearResults() {
+            document.getElementById('status').innerHTML = '';
+            document.getElementById('result').style.display = 'none';
+        }
+
+        function validateJson() {
+            try {
+                const jsonText = document.getElementById('requestJson').value;
+                JSON.parse(jsonText);
+                showStatus('✅ JSON is valid!', 'success');
+            } catch (error) {
+                showStatus(`❌ Invalid JSON: ${error.message}`, 'error');
+            }
+        }
+
+        async function sendRequest() {
+            const sendBtn = document.getElementById('sendBtn');
+            const loading = document.getElementById('loading');
+            
+            try {
+                // Validate JSON first
+                const jsonText = document.getElementById('requestJson').value;
+                const requestData = JSON.parse(jsonText);
+                
+                // Show loading state
+                sendBtn.disabled = true;
+                loading.style.display = 'block';
+                clearResults();
+                showStatus('🔄 Sending request to API...', 'info');
+                
+                // Send request to API
+                const response = await fetch(`${API_BASE_URL}/run-appraisal`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestData)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showStatus('✅ Request completed successfully!', 'success');
+                    showResult(result);
+                } else {
+                    showStatus(`❌ API Error: ${result.detail || 'Unknown error'}`, 'error');
+                    showResult(result);
+                }
+                
+            } catch (error) {
+                showStatus(`❌ Network Error: ${error.message}`, 'error');
+                console.error('Error:', error);
+            } finally {
+                sendBtn.disabled = false;
+                loading.style.display = 'none';
+            }
+        }
+
+        // Check if server is running on page load
+        window.addEventListener('load', async () => {
+            try {
+                const response = await fetch(`${API_BASE_URL}/health`);
+                if (response.ok) {
+                    showStatus('✅ Server is running and ready!', 'success');
+                } else {
+                    showStatus('⚠️ Server responded but may have issues', 'info');
+                }
+            } catch (error) {
+                showStatus('❌ Cannot connect to server. Make sure it\'s running on localhost:8000', 'error');
+            }
+        });
+    </script>
+</body>
+</html>
