@@ -302,21 +302,9 @@ class NadlanPlaywrightSimpleWorking:
                                     appraisal_fee = await appraisal_fee_element.text_content()
                                     print(f"✅ Extracted appraisal fee: {appraisal_fee}")
                                     
-                                    # Take screenshot of the appraisal fee element
-                                    screenshot_path = self.variables.get('screenshot_path', 'appraisal_fee_element.png')
-                                    await appraisal_fee_element.screenshot(path=screenshot_path)
-                                    print(f"Screenshot of appraisal fee element saved as: {screenshot_path}")
-                                    
-                                    # Take full page screenshot
-                                    full_page_screenshot = 'full_page_appraisal_fee.png'
-                                    await page.screenshot(path=full_page_screenshot, full_page=True)
-                                    print(f"Full page screenshot saved as: {full_page_screenshot}")
-                                    
                                     # Return the results as JSON
                                     result = {
-                                        "appraisal_fee": appraisal_fee,
-                                        "appraisal_fee_screenshot": screenshot_path,
-                                        "full_page_screenshot": full_page_screenshot
+                                        "appraisal_fee": appraisal_fee
                                     }
                                     
                                     print(json.dumps(result))

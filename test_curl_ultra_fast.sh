@@ -9,7 +9,6 @@ curl -X POST http://localhost:8000/run-appraisal \
   -H "Content-Type: application/json" \
   -d '{
     "wait_time": 0,
-    "screenshot_path": "appraisal_fee_test.png",
     "headless": false,
     "username": "AaronK",
     "password": "berlinchildhood$",
