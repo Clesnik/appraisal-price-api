@@ -3,8 +3,8 @@
 # Deploy Appraisal Price API to SSH Droplet
 
 # Configuration - Update these variables
-DROPLET_IP="your-droplet-ip"
-DROPLET_USER="your-username"
+DROPLET_IP="167.172.17.131"
+DROPLET_USER="ubuntu"
 SSH_KEY_PATH="~/.ssh/id_rsa"
 REMOTE_DIR="/home/$DROPLET_USER/appraisal_price_api"
 
@@ -34,8 +34,8 @@ fi
 echo "Copying files to droplet..."
 scp -i "$SSH_KEY_PATH" \
     main.py \
-    nadlan_playwright.py \
-    droplet_script.py \
+    nadlan_playwright_simple_working.py \
+    droplet_server.py \
     requirements.txt \
     README.md \
     "$DROPLET_USER@$DROPLET_IP:$REMOTE_DIR/"
@@ -56,7 +56,7 @@ fi
 
 # Install Playwright browsers on droplet
 echo "Installing Playwright browsers on droplet..."
-ssh -i "$SSH_KEY_PATH" "$DROPLET_USER@$DROPLET_IP" "cd $REMOTE_DIR && playwright install chromium"
+ssh -i "$SSH_KEY_PATH" "$DROPLET_USER@$DROPLET_IP" "cd $REMOTE_DIR && playwright install firefox"
 
 if [ $? -ne 0 ]; then
     echo "Error: Failed to install Playwright browsers on droplet"
@@ -84,7 +84,12 @@ echo ""
 echo "To run the standalone script on the droplet:"
 echo "ssh -i $SSH_KEY_PATH $DROPLET_USER@$DROPLET_IP"
 echo "cd $REMOTE_DIR"
-echo "python3 droplet_script.py '{\"wait_time\": 3000}'"
+echo "python3 nadlan_playwright_simple_working.py '{\"username\":\"AaronK\",\"password\":\"berlinchildhood$\",\"transaction_type\":\"Purchase\",\"property_type\":\"Single Family Residential\",\"property_address\":\"15 Burr Avenue\",\"property_city\":\"Marlboro Township\",\"property_state\":\"New Jersey\",\"property_zip\":\"07751\",\"occupancy_type\":\"Investment\",\"product\":59,\"headless\":true}'"
+echo ""
+echo "To run the API server on the droplet:"
+echo "ssh -i $SSH_KEY_PATH $DROPLET_USER@$DROPLET_IP"
+echo "cd $REMOTE_DIR"
+echo "python3 droplet_server.py"
 echo ""
 echo "To execute via SSH from your local machine:"
-echo "ssh -i $SSH_KEY_PATH $DROPLET_USER@$DROPLET_IP \"cd $REMOTE_DIR && python3 droplet_script.py '{\\\"wait_time\\\": 3000}'\""
+echo "ssh -i $SSH_KEY_PATH $DROPLET_USER@$DROPLET_IP \"cd $REMOTE_DIR && python3 nadlan_playwright_simple_working.py '{\\\"username\\\":\\\"AaronK\\\",\\\"password\\\":\\\"berlinchildhood$\\\",\\\"transaction_type\\\":\\\"Purchase\\\",\\\"property_type\\\":\\\"Single Family Residential\\\",\\\"property_address\\\":\\\"15 Burr Avenue\\\",\\\"property_city\\\":\\\"Marlboro Township\\\",\\\"property_state\\\":\\\"New Jersey\\\",\\\"property_zip\\\":\\\"07751\\\",\\\"occupancy_type\\\":\\\"Investment\\\",\\\"product\\\":59,\\\"headless\\\":true}'\""

@@ -255,26 +255,95 @@ class NadlanPlaywrightSimpleWorking:
                                 
                                 print("✅ All available fields filled successfully!")
                                 
-                                # Wait for appraisal fee to appear
-                                print("⏳ Waiting for appraisal fee to appear...")
-                                await page.wait_for_timeout(3000)
+                                # Wait for any calculations to happen
+                                print("⏳ Waiting for potential fee calculation...")
+                                await page.wait_for_timeout(1000)  # 1 second delay as requested
                                 
                                 # Try to extract appraisal fee if available
                                 try:
-                                    appraisal_fee_element = await page.wait_for_selector('#ctl00_cphBody_lblAppraisalFee', timeout=3000)
+                                    # Look for the appraisal fee element with the correct selector
+                                    appraisal_fee_element = await page.wait_for_selector('#ctl00_cphBody_lblLenderAppraisalFee', timeout=5000)
+                                    
+                                    # Get the parent element that contains both the label and the fee
+                                    parent_element = await appraisal_fee_element.query_selector('..')
+                                    if parent_element:
+                                        parent_text = await parent_element.text_content()
+                                        print(f"✅ Parent element text: {parent_text}")
+                                        
+                                        # Extract the dollar amount from the parent text
+                                        import re
+                                        fee_match = re.search(r'Appraisal Fee:\s*\$?(\d+)', parent_text)
+                                        if fee_match:
+                                            fee_amount = f"${fee_match.group(1)}"
+                                            print(f"✅ Extracted appraisal fee: {fee_amount}")
+                                            
+                                            result = {
+                                                "appraisal_fee": fee_amount
+                                            }
+                                            
+                                            print(json.dumps(result))
+                                            return result
+                                        else:
+                                            print(f"❌ Could not extract fee from parent text: {parent_text}")
+                                    else:
+                                        print("❌ Could not find parent element")
+                                    
+                                    # Fallback: try to get text content directly
                                     appraisal_fee = await appraisal_fee_element.text_content()
-                                    print(f"✅ Extracted appraisal fee: {appraisal_fee}")
-                                    
-                                    # Return the results as JSON
-                                    result = {
-                                        "appraisal_fee": appraisal_fee
-                                    }
-                                    
-                                    print(json.dumps(result))
-                                    return result
+                                    if appraisal_fee and appraisal_fee.strip():
+                                        print(f"✅ Extracted appraisal fee: ${appraisal_fee}")
+                                        result = {
+                                            "appraisal_fee": f"${appraisal_fee}"
+                                        }
+                                        print(json.dumps(result))
+                                        return result
+                                    else:
+                                        print("❌ Appraisal fee element is empty")
                                     
                                 except Exception as e:
                                     print(f"⚠️ Could not extract appraisal fee: {e}")
+                                    
+                                    # Try to find any element containing "Appraisal Fee"
+                                    try:
+                                        print("🔍 Searching for 'Appraisal Fee' text...")
+                                        # Get page content and search for the text
+                                        page_content = await page.content()
+                                        
+                                        if 'Appraisal Fee' in page_content:
+                                            print("✅ Found 'Appraisal Fee' in page content")
+                                            
+                                            # Look for the pattern "Appraisal Fee: $XXX" with more flexible regex
+                                            import re
+                                            fee_match = re.search(r'Appraisal Fee[:\s]*\$([\d,]+\.?\d*)', page_content)
+                                            if fee_match:
+                                                fee_amount = f"${fee_match.group(1)}"
+                                                result = {
+                                                    "appraisal_fee": fee_amount
+                                                }
+                                                print(f"✅ Extracted appraisal fee: {fee_amount}")
+                                                print(json.dumps(result))
+                                                return result
+                                            else:
+                                                # Try a more general search for any dollar amount near "Appraisal Fee"
+                                                print("🔍 Trying alternative regex pattern...")
+                                                fee_match = re.search(r'Appraisal Fee.*?(\$[\d,]+\.?\d*)', page_content, re.DOTALL)
+                                                if fee_match:
+                                                    fee_amount = fee_match.group(1)
+                                                    result = {
+                                                        "appraisal_fee": fee_amount
+                                                    }
+                                                    print(f"✅ Extracted appraisal fee: {fee_amount}")
+                                                    print(json.dumps(result))
+                                                    return result
+                                                else:
+                                                    print("❌ Could not extract dollar amount from 'Appraisal Fee' text")
+                                        else:
+                                            print("❌ No 'Appraisal Fee' text found in page content")
+                                    except Exception as search_error:
+                                        print(f"⚠️ Error searching for fee elements: {search_error}")
+                                        # Fallback: just return success without fee
+                                        pass
+                                    
                                     # Still return success with available data
                                     result = {
                                         "status": "success",

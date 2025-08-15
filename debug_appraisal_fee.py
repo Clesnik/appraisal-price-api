@@ -9,7 +9,6 @@ async def debug_appraisal_fee():
         page = await browser.new_page()
         
         try:
-            # Navigate and login
             print("🚀 Navigating to AddAppraisal.aspx...")
             await page.goto('https://nadlanvaluation.spurams.com/AddAppraisal.aspx')
             await page.wait_for_load_state("domcontentloaded")
@@ -19,113 +18,96 @@ async def debug_appraisal_fee():
             await page.fill('#ctl00_cphBody_Login1_Password', 'berlinchildhood$')
             await page.click('#ctl00_cphBody_Login1_LoginButton')
             await page.wait_for_load_state("domcontentloaded")
-            await page.wait_for_timeout(2000)
             
-            # Wait for form
+            # Wait for form to load
             await page.wait_for_selector('#ctl00_cphBody_drpTransactionType', timeout=5000)
-            print("✅ Form loaded")
+            print("✅ Form loaded successfully")
             
-            # Fill all the fields
-            print("📝 Filling form fields...")
-            
-            # Transaction Type
-            await page.select_option('#ctl00_cphBody_drpTransactionType', '1')
-            print("✅ Transaction Type")
-            await page.wait_for_timeout(500)
-            
-            # Loan Type
-            await page.select_option('#ctl00_cphBody_drpLoanType', '5')
-            print("✅ Loan Type")
-            await page.wait_for_timeout(500)
-            
-            # Property Type
-            await page.select_option('#ctl00_cphBody_drpPropertyType', '13')
-            print("✅ Property Type")
-            await page.wait_for_timeout(500)
-            
-            # Property Address
+            # Fill the form with test data
+            await page.select_option('#ctl00_cphBody_drpTransactionType', '1')  # Purchase
+            await page.select_option('#ctl00_cphBody_drpPropertyType', '13')  # Single Family
             await page.fill('#ctl00_cphBody_txtPropertyAddress', '15 Burr Avenue')
-            print("✅ Property Address")
-            await page.wait_for_timeout(500)
-            
-            # Property City
             await page.fill('#ctl00_cphBody_txtPropertyCity', 'Marlboro Township')
-            print("✅ Property City")
-            await page.wait_for_timeout(500)
-            
-            # Property State
             await page.select_option('#ctl00_cphBody_drpPropertyState', 'NJ')
-            print("✅ Property State")
-            await page.wait_for_timeout(500)
-            
-            # Property Zip
             await page.fill('#ctl00_cphBody_txtPropertyZip', '07751')
-            print("✅ Property Zip")
-            await page.wait_for_timeout(1000)
-            
-            # Occupancy Type
             await page.select_option('#ctl00_cphBody_drpOccupiedBy', 'Investment')
-            print("✅ Occupancy Type")
-            await page.wait_for_timeout(500)
-            
-            # Product/Appraisal Type
             await page.select_option('#ctl00_cphBody_drpAppraisalType', '59')
-            print("✅ Product/Appraisal Type")
-            await page.wait_for_timeout(500)
             
-            print("✅ All fields filled!")
+            print("✅ Form filled successfully")
             
-            # Wait and look for buttons
-            await page.wait_for_timeout(3000)
-            
-            # Look for all buttons on the page
-            print("🔍 Looking for buttons on the page...")
-            buttons = await page.query_selector_all('button, input[type="submit"], input[type="button"]')
+            # Look for any buttons that might trigger calculation
+            print("\n🔍 Looking for buttons on the page...")
+            buttons = await page.query_selector_all('input[type="button"], input[type="submit"], button')
             print(f"Found {len(buttons)} buttons:")
             
             for i, button in enumerate(buttons):
                 try:
-                    text = await button.text_content()
-                    value = await button.get_attribute('value')
-                    id_attr = await button.get_attribute('id')
-                    class_attr = await button.get_attribute('class')
-                    print(f"  Button {i+1}: text='{text}', value='{value}', id='{id_attr}', class='{class_attr}'")
-                except:
-                    print(f"  Button {i+1}: [error reading attributes]")
+                    button_text = await button.text_content()
+                    button_type = await button.get_attribute('type')
+                    button_id = await button.get_attribute('id')
+                    button_class = await button.get_attribute('class')
+                    button_value = await button.get_attribute('value')
+                    
+                    print(f"  Button {i+1}:")
+                    print(f"    Text: {button_text}")
+                    print(f"    Type: {button_type}")
+                    print(f"    ID: {button_id}")
+                    print(f"    Class: {button_class}")
+                    print(f"    Value: {button_value}")
+                    print()
+                except Exception as e:
+                    print(f"  Button {i+1}: Error getting details - {e}")
             
-            # Look for appraisal fee element
-            print("🔍 Looking for appraisal fee element...")
+            # Look for any elements that might contain "calculate", "submit", "fee", etc.
+            print("\n🔍 Looking for calculation-related elements...")
+            page_content = await page.content()
+            
+            # Check for common calculation-related terms
+            calculation_terms = ['calculate', 'submit', 'fee', 'price', 'cost', 'estimate']
+            for term in calculation_terms:
+                if term.lower() in page_content.lower():
+                    print(f"  Found '{term}' in page content")
+            
+            # Check if appraisal fee element exists but is hidden
+            print("\n🔍 Checking appraisal fee element...")
             try:
-                fee_element = await page.wait_for_selector('#ctl00_cphBody_lblAppraisalFee', timeout=2000)
+                fee_element = await page.query_selector('#ctl00_cphBody_lblAppraisalFee')
                 if fee_element:
-                    fee_text = await fee_element.text_content()
-                    print(f"✅ Found appraisal fee: {fee_text}")
+                    is_visible = await fee_element.is_visible()
+                    text_content = await fee_element.text_content()
+                    print(f"  Appraisal fee element found:")
+                    print(f"    Visible: {is_visible}")
+                    print(f"    Text: '{text_content}'")
+                    print(f"    Display style: {await fee_element.evaluate('el => getComputedStyle(el).display')}")
                 else:
-                    print("❌ Appraisal fee element not found")
-            except:
-                print("❌ Appraisal fee element not found")
+                    print("  Appraisal fee element not found")
+            except Exception as e:
+                print(f"  Error checking fee element: {e}")
             
-            # Look for any elements containing "fee" or "price"
-            print("🔍 Looking for any fee/price related elements...")
-            fee_elements = await page.query_selector_all('[id*="fee"], [id*="price"], [class*="fee"], [class*="price"]')
-            print(f"Found {len(fee_elements)} fee/price related elements:")
+            # Wait a bit and check again
+            print("\n⏳ Waiting 5 seconds and checking again...")
+            await page.wait_for_timeout(5000)
             
-            for i, element in enumerate(fee_elements):
-                try:
-                    text = await element.text_content()
-                    id_attr = await element.get_attribute('id')
-                    class_attr = await element.get_attribute('class')
-                    print(f"  Element {i+1}: text='{text}', id='{id_attr}', class='{class_attr}'")
-                except:
-                    print(f"  Element {i+1}: [error reading attributes]")
+            try:
+                fee_element = await page.query_selector('#ctl00_cphBody_lblAppraisalFee')
+                if fee_element:
+                    is_visible = await fee_element.is_visible()
+                    text_content = await fee_element.text_content()
+                    print(f"  After waiting - Appraisal fee element:")
+                    print(f"    Visible: {is_visible}")
+                    print(f"    Text: '{text_content}'")
+                else:
+                    print("  After waiting - Appraisal fee element still not found")
+            except Exception as e:
+                print(f"  Error checking fee element after waiting: {e}")
             
-            # Take a screenshot
-            await page.screenshot(path='debug_form_filled.png', full_page=True)
+            # Take a screenshot for debugging
+            await page.screenshot(path="debug_form_filled.png")
             print("📸 Screenshot saved as debug_form_filled.png")
             
-            # Wait for user to see the page
-            print("⏳ Waiting 10 seconds for you to see the page...")
-            await page.wait_for_timeout(10000)
+            # Keep browser open for manual inspection
+            print("\n🔍 Browser will stay open for 30 seconds for manual inspection...")
+            await page.wait_for_timeout(30000)
             
         except Exception as e:
             print(f"Error: {e}")

@@ -46,7 +46,7 @@ async def run_appraisal(request: AppraisalRequest):
         
         # Run the script using subprocess
         result = subprocess.run(
-            [sys.executable, "nadlan_playwright_simple.py", variables_json],
+            [sys.executable, "nadlan_playwright_simple_working.py", variables_json],
             capture_output=True,
             text=True,
             timeout=300  # 5 minute timeout
